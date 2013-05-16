@@ -1,0 +1,37 @@
+<head>
+  <title>f7counter</title>
+</head>
+
+<body>
+    <h1>Press F7 now - do it!</h1>
+    {{> player }}
+    {{> highscore }}
+</body>
+
+<template name="player">
+    <div>
+        <b>Player:</b> <span class="player">{{ player }}</span>
+    </div>
+    <div>
+        <b>Score:</b><span class="">{{ score }}</span>
+    </div>
+    <div>
+        <b>Level:</b><span class="level">{{ level }}</span>
+    </div>
+</template>
+
+<template name="highscore">
+    Highscore:
+    <table class="table table-striped highscore_list">
+    {{#each players}}
+      {{> list_player}}
+    {{/each}}
+  </table>
+</template>
+
+<template name="list_player">
+  <tr class="{{ selected }}">
+    <td>{{ name }}</td>
+    <td>{{ score }}</td>
+  </tr>
+</template>
