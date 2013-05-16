@@ -1,1 +1,6 @@
 /* CSS declarations go here */
+
+#pepp_image {
+	max-height: 250px;
+	max-width: 250px;
+}

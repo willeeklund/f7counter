@@ -4,34 +4,57 @@
 
 <body>
     <h1>Press F7 now - do it!</h1>
-    {{> player }}
-    {{> highscore }}
+    <div class="player_stats span6">
+      {{> player }}
+    </div>
+    <div class="highscore span6">
+      {{> highscore }}
+    </div>
 </body>
+
+
+
+
 
 <template name="player">
     <div>
         <b>Player:</b> <span class="player">{{ player }}</span>
     </div>
     <div>
-        <b>Score:</b><span class="">{{ score }}</span>
+        <b>Score:</b> <span class="">{{ score }}</span>
     </div>
     <div>
-        <b>Level:</b><span class="level">{{ level }}</span>
+        <b>Level:</b> <span class="level">{{ level }}</span>
+    </div>
+
+    <div class="pepp_image_wrap">
+      <img id="pepp_image" src="{{ pepp_image_src }}">
+      <div>{{ pepp_name }}</div>
     </div>
 </template>
 
 <template name="highscore">
-    Highscore:
-    <table class="table table-striped highscore_list">
+  <h2>Highscore</h2>
+  <table class="table table-striped highscore_list"><tbody>
     {{#each players}}
       {{> list_player}}
     {{/each}}
-  </table>
+  </tbody></table>
+  {{> add_player}}
 </template>
 
 <template name="list_player">
   <tr class="{{ selected }}">
     <td>{{ name }}</td>
     <td>{{ score }}</td>
+    <td>{{ level }}</td>
   </tr>
+</template>
+
+<template name="add_player">
+  <i class="toggle_add_player_form icon-plus-sign"></i>
+  <form class="add_player_form" name="add_netlighter_form" id="add_netlighter_form" style="display:none;">
+    <input type="text" id="new_player_name" class="span4" name="name" value="" placeholder="Name">
+    <input type="submit" id="submit_player" value="Add Netlighter" class="btn btn-primary">
+  </form>
 </template>
