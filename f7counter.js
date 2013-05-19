@@ -108,6 +108,14 @@ if (Meteor.isClient) {
   Template.highscore.players = function () {
     return Highscore.find({}, {sort: {score: -1, name: 1}});
   };
+  Template.highscore.events = {
+    'click .reset_highscores': function () {
+      var highscores = Highscore.find({});
+      highscores.forEach(function (item) {
+        Highscore.remove(item._id);
+      });
+    }
+  };
 
   Template.list_player.selected = function () {
     return Session.equals("player", this._id) ? "success" : '';
