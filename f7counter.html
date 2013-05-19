@@ -8,8 +8,13 @@
     <div class="player_stats span6">
       {{> player }}
     </div>
-    <div class="highscore span6">
-      {{> highscore }}
+    <div class="span6">
+      <div class="scores">
+        {{> scores }}
+      </div>
+      <div class="highscore">
+        {{> highscore }}
+      </div>
     </div>
 </body>
 
@@ -35,6 +40,26 @@
 <template name="highscore">
   <h2>Highscore</h2>
   <table class="table table-striped highscore_list"><tbody>
+    <tr>
+      <th>Name</th>
+      <th>Score</th>
+      <th>Level</th>
+      <th>Time</th>
+    </tr>
+    {{#each players}}
+      {{> list_player}}
+    {{/each}}
+  </tbody></table>
+</template>
+
+<template name="scores">
+  <h2>Current Scores</h2>
+  <table class="table table-striped"><tbody>
+    <tr>
+      <th>Name</th>
+      <th>Score</th>
+      <th>Level</th>
+    </tr>
     {{#each players}}
       {{> list_player}}
     {{/each}}
@@ -47,6 +72,7 @@
     <td>{{ name }}</td>
     <td>{{ score }}</td>
     <td>{{ level }}</td>
+    <td>{{ date }}</td>
   </tr>
 </template>
 
@@ -56,4 +82,5 @@
     <input type="text" id="new_player_name" class="span4" name="name" value="" placeholder="Name">
     <input type="submit" id="submit_player" value="Add Netlighter" class="btn btn-primary">
   </form>
+  <i class="remove_player icon-minus-sign"></i>
 </template>

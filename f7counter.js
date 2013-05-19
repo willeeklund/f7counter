@@ -1,4 +1,5 @@
 Players = new Meteor.Collection("players");
+Highscore = new Meteor.Collection("highscore");
 
 var scoreToLevel = function (score) {
   return parseInt(score/100, 10);
@@ -46,11 +47,19 @@ if (Meteor.isClient) {
     if (typeof console !== 'undefined') {
       console.log("pressed key code:", ev.which);
     }
-    if (ev.which === keyCode) {
+    if (ev.which === keyCode || Session.equals("cheat", true)) {
       if (Session.get("player")) {
         Players.update(Session.get("player"), {$inc: {score: 1}});
         var player = Players.findOne(Session.get("player"));
+        var personal_best = Highscore.findOne(Session.get("player"));
         console.log("player score:", player.score);
+        console.log("personal_best", personal_best)
+        if (!personal_best) {
+          console.log("No previous highscore for player");
+          Highscore.insert({"_id": player._id, "name": player.name, "score": player.score, "date": new Date() })
+        } else if (personal_best.score < player.score) {
+          Highscore.update(Session.get("player"), {$set: {"score": player.score, "date": new Date() } });
+        }
       }
     }
   });
@@ -88,19 +97,31 @@ if (Meteor.isClient) {
   Template.player.level = function () {
     var player = Players.findOne(Session.get("player"));
     if (player) {
-      return scoreToString(player.score);
+      return scoreToLevel(player.score);
     }
   };
 
-  Template.highscore.players = function () {
+  Template.scores.players = function () {
     return Players.find({}, {sort: {score: -1, name: 1}});
+  };
+
+  Template.highscore.players = function () {
+    return Highscore.find({}, {sort: {score: -1, name: 1}});
   };
 
   Template.list_player.selected = function () {
     return Session.equals("player", this._id) ? "success" : '';
   };
   Template.list_player.level = function () {
-    return scoreToString(this.score);
+    return scoreToLevel(this.score);
+  };
+  Template.list_player.date = function () {
+    if (!this.date) {
+      return "";
+    }
+    var day = this.date.getFullYear() + "-0" + this.date.getMonth() + "-" + this.date.getDate(),
+        time = this.date.getHours() + ":" + this.date.getMinutes() + ":" + this.date.getSeconds();
+    return day + " " + time;
   };
   Template.list_player.events({
     'click': function () {
@@ -112,6 +133,14 @@ if (Meteor.isClient) {
   Template.add_player.events({
     'click .toggle_add_player_form': function () {
       $(".add_player_form").toggle();
+    },
+    'click .remove_player': function () {
+      console.log("removing player", Session.get('player'));
+      if (Session.get('player')) {
+        Players.remove(Session.get('player'));
+        Highscore.remove(Session.get('player'));
+        Session.set('player', undefined);
+      }
     },
     'click #submit_player': function (ev) {
       ev.preventDefault();
