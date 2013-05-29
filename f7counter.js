@@ -1,17 +1,9 @@
-Players = new Meteor.Collection("players");
-Highscore = new Meteor.Collection("highscore");
+/* globals $ */
+var Players = new Meteor.Collection("players");
+var Highscore = new Meteor.Collection("highscore");
 
 var scoreToLevel = function (score) {
-  return parseInt(score/100, 10);
-};
-var levelToString = function (level) {
-  var level_string = { 0: 'A', 1: 'AC', 2: 'C', 3: 'SrC', 4: 'SM', 5: 'M', 6: 'SrM', 7: 'P'};
-  var level_as_string = level_string[level];
-  if (level_as_string) {
-    return level_as_string;
-  } else {
-    return "Champion!";
-  }
+  return parseInt(score/50, 10);
 };
 var levelToImage = function (level) {
   var level_image = {
@@ -20,28 +12,35 @@ var levelToImage = function (level) {
     2: {'image': '/inny.jpg', 'name': 'Ingela'},
     3: {'image': '/arsy.jpg', 'name': 'Ardian'},
     4: {'image': '/anoh.jpg', 'name': 'Anna'}
-    //5: {'image': '/amni.jpg', 'name': ''},
-    //6: {'image': '/amni.jpg', 'name': ''},
-    //7: {'image': '/jocke.jpg', 'name': ''}
   };
   var level_as_string = level_image[level];
   if (level_as_string) {
     return level_as_string;
   } else {
-    return {'image': '/jocke.jpg', 'name': 'Jocke'}
+    return {'image': '/jocke.jpg', 'name': 'Jocke'};
   }
-};
-var scoreToString = function (score) {
-  return levelToString(scoreToLevel(score));
 };
 var scoreToImage = function (score) {
   return levelToImage(scoreToLevel(score));
 };
 
 if (Meteor.isClient) {
-  // Init
-  // TODO: Change to keycode for F7
-  var keyCode = 118;
+  var keyCode,
+  code_f7 = 118,
+  code_f12 = 123;
+  keyCode = code_f7;
+
+  window.setInterval(function () {
+    console.log("Changing keyCode to ", code_f12);
+    keyCode = code_f12;
+    $("#keyCode").text("F12");
+
+    window.setTimeout(function () {
+      console.log("Changing keyCode to ", code_f7);
+      keyCode = code_f7;
+      $("#keyCode").text("F7");
+    }, 5000);
+  }, 20000);
 
   $(document).bind("keyup", function(ev){
     if (typeof console !== 'undefined') {
@@ -53,10 +52,10 @@ if (Meteor.isClient) {
         var player = Players.findOne(Session.get("player"));
         var personal_best = Highscore.findOne(Session.get("player"));
         console.log("player score:", player.score);
-        console.log("personal_best", personal_best)
+        console.log("personal_best", personal_best);
         if (!personal_best) {
           console.log("No previous highscore for player");
-          Highscore.insert({"_id": player._id, "name": player.name, "score": player.score, "date": new Date() })
+          Highscore.insert({"_id": player._id, "name": player.name, "score": player.score, "date": new Date() });
         } else if (personal_best.score < player.score) {
           Highscore.update(Session.get("player"), {$set: {"score": player.score, "date": new Date() } });
         }
@@ -69,7 +68,7 @@ if (Meteor.isClient) {
     if (player) {
       return player.name;
     } else {
-      return "No player selected - select from the list below"
+      return "No player selected - select from the list below";
     }
   };
   Template.player.pepp_image_src = function () {
@@ -83,7 +82,7 @@ if (Meteor.isClient) {
     var player = Players.findOne(Session.get("player"));
     if (player) {
       var image_obj = scoreToImage(player.score);
-      if (image_obj.name != "") {
+      if (image_obj.name !== "") {
         return image_obj.name +  " Says You're The Inspiration "+ player.name +"!";
       }
     }
